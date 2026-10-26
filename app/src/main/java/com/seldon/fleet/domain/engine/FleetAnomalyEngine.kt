@@ -1,11 +1,12 @@
 package com.seldon.fleet.domain.engine
 
+import com.seldon.fleet.domain.analysis.DeviceMetrics
+import com.seldon.fleet.domain.classifier.DeviceStatusClassifier
 import com.seldon.fleet.domain.model.DataIssueCode
 import com.seldon.fleet.domain.model.DataQuality
 import com.seldon.fleet.domain.model.Device
 import com.seldon.fleet.domain.model.DeviceAnalysis
 import com.seldon.fleet.domain.model.DeviceStatus
-import com.seldon.fleet.domain.model.DeviceTier
 import com.seldon.fleet.domain.model.DiagnosisResult
 import com.seldon.fleet.domain.model.RiskContribution
 import com.seldon.fleet.domain.model.RiskFactor
@@ -22,7 +23,10 @@ import javax.inject.Inject
  * O índice de risco 0..100 é complementar: ele enriquece a UI e o detalhe, mas
  * nunca substitui a decisão binária dos limiares oficiais.
  */
-class FleetAnomalyEngine @Inject constructor() {
+class FleetAnomalyEngine @Inject constructor() : DeviceStatusClassifier {
+
+    override fun classify(device: Device, fleet: List<Device>): DeviceStatus =
+        analyze(device).status
 
     fun analyze(device: Device): DeviceAnalysis {
         val indeterminateReason = indeterminateReason(device)
@@ -30,14 +34,15 @@ class FleetAnomalyEngine @Inject constructor() {
             return indeterminate(device, indeterminateReason)
         }
 
+        val metrics = DeviceMetrics.from(device)
+            ?: return indeterminate(device, "dados insuficientes para calcular as derivadas")
         val capacity = requireNotNull(device.batteryCapacityMah)
         val screenMinutes = requireNotNull(device.screenOnMinutes)
-        val energyMah = requireNotNull(device.energyConsumedMah)
-        val jank = requireNotNull(device.jankFramesPct)
-        val crashes = requireNotNull(device.crashCount7d)
+        val jank = metrics.jankFramesPct
+        val crashes = metrics.crashCount7d
 
-        val absoluteDrain = energyMah / (screenMinutes / 60.0)
-        val relativeDrain = (absoluteDrain / capacity) * 100.0
+        val absoluteDrain = metrics.absoluteDrainMahPerHour
+        val relativeDrain = metrics.relativeDrainPctPerHour
 
         val criticalTriggers = buildList {
             if (relativeDrain >= CRITICAL_DRAIN) add(Trigger(Signal.DRAIN, relativeDrain, CRITICAL_DRAIN))
