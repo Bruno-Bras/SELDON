@@ -1,0 +1,38 @@
+[
+  {
+    "device_id": "SLD-8821",
+    "model_name": "Seldon Tracker V2",
+    "battery_pct": 14,
+    "operating_temp_c": 58.4,
+    "charge_cycles": 1240,
+    "packet_loss_pct": 18.2,
+    "firmware": "v2.4.1"
+  },
+  {
+    "device_id": "SLD-3309",
+    "model_name": "Seldon Edge Node",
+    "battery_pct": "EIGHTY",
+    "operating_temp_c": null,
+    "charge_cycles": -50,
+    "packet_loss_pct": 0.0,
+    "firmware": "v1.0.0"
+  },
+  {
+    "device_id": null,
+    "model_name": "Unknown Device",
+    "battery_pct": -999,
+    "operating_temp_c": 120.0,
+    "charge_cycles": 0,
+    "packet_loss_pct": 99.9,
+    "firmware": null
+  },
+  {
+    "device_id": "SLD-1044",
+    "model_name": "Seldon Sensor Pro",
+    "battery_pct": 92,
+    "operating_temp_c": 31.2,
+    "charge_cycles": 180,
+    "packet_loss_pct": 0.1,
+    "firmware": "v3.1.0"
+  }
+]
