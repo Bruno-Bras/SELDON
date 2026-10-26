@@ -108,8 +108,13 @@ status de nenhum dos 30 registros oficiais além dos dois defeitos previstos.
 O detalhe e a lista também mostram um índice de risco de 0 a 100. Ele é
 **auxiliar e não participa da classificação oficial**. Seu cálculo usa os
 mesmos sinais e limiares, com pesos heurísticos (dreno 55%, falhas 30%, quadros
-15%) e piso por status. Ele não deve ser lido como uma segunda regra de
-negócio nem como uma implementação da Trilha A.
+15%) e piso por status. Ele não deve ser lido como uma segunda regra de negócio
+nem como uma implementação da Trilha A.
+
+A Trilha A é uma implementação separada, em
+`domain/classifier/PercentileStatusClassifier.kt`, avaliada offline contra a
+referência em [docs/trilha-a.md](docs/trilha-a.md). Ela não participa desta
+regra, não é injetada na UI e não altera nenhum dos 30 resultados oficiais.
 
 Para registros `INDETERMINADO`, o risco não é calculado e a interface mostra
 “—” ou “risco não calculável”, em vez de um zero que poderia sugerir saúde.
@@ -134,12 +139,19 @@ Para registros `INDETERMINADO`, o risco não é calculado e a interface mostra
    disponíveis.
 7. **O índice de risco é heurístico.** Os pesos e pisos não foram validados
    empiricamente e não alteram o status oficial.
+8. **A Trilha A não é uma validação independente.** O classificador por
+   percentil foi comparado com a própria referência, sem ground truth externo;
+   a adjudicação das divergências é manual e não cega. O resultado não deve ser
+   lido como acurácia de nenhum dos dois métodos.
 
 ## 6. Reprodutibilidade
 
 ```bash
 # Testes JVM
 ./gradlew :app:testDebugUnitTest
+
+# Apenas a comparação da Trilha A
+./gradlew :app:testDebugUnitTest --tests "com.seldon.fleet.domain.comparison.*"
 
 # Análise estática
 ./gradlew :app:lintDebug

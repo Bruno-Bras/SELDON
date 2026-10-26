@@ -61,7 +61,7 @@ adb shell am start -n com.seldon.fleet/.MainActivity
 
 ```text
 app/src/main/java/com/seldon/fleet/
-├── domain/       modelos, FleetAnomalyEngine, interface de repositório e use cases
+├── domain/       modelos, engine, classificadores, comparação e repositório
 ├── data/         parser defensivo, assets, DataStore e implementação do repositório
 ├── presentation/ lista, detalhe, ViewModels, navegação e componentes Compose
 ├── di/           módulos Hilt
@@ -109,7 +109,28 @@ Cobertura principal:
 - precedência entre sinais e `INDETERMINADO`;
 - dados corrompidos, tipos inválidos, campos ausentes e IDs duplicados;
 - distribuição oficial `16 / 8 / 4 / 2`;
+- percentil com *leave-one-out*, empates, fronteiras P90/P60 e dados inválidos;
+- comparação do classificador por percentil contra a referência;
 - filtros, contagens, favoritos e erros de ViewModel.
+
+## Trilha A (opcional)
+
+A segunda implementação da interface de classificação é o
+`PercentileStatusClassifier`: ele usa o máximo dos ranks percentuais de dreno
+relativo, jank e falhas, com *leave-one-out* e cortes P90/P60. O experimento é
+offline, não altera a regra oficial e não foi ligado à interface.
+
+O relatório completo, com matriz de confusão, as 9 divergências, a adjudicação
+manual e as ameaças à validade, está em [docs/trilha-a.md](docs/trilha-a.md).
+O veredito da amostra é que a referência erra menos: o candidato produziu 8
+falsos positivos e 1 falso negativo, sem nenhum caso em que fosse claramente
+melhor.
+
+Para reproduzir apenas a comparação:
+
+```powershell
+.\gradlew.bat :app:testDebugUnitTest --tests "com.seldon.fleet.domain.comparison.*"
+```
 
 ## Integração contínua
 
@@ -129,9 +150,9 @@ entrega. Localmente, os mesmos comandos estão verdes.
    maior do que 30 registros.
 4. **Modelo de dreno mais realista** que considere consumo com a tela desligada
    e serviços em primeiro plano, reduzindo falsos `CRITICO`.
-5. **Trilha A opcional** com um segundo classificador orientado por dados
-   (percentil ou modelo simples) e comparação explícita contra a linha de base.
-   Não incluída nesta entrega.
+5. **Ground truth para a Trilha A:** o experimento atual compara o percentil
+   com a referência, mas não tem rótulos independentes. Ver
+   [docs/trilha-a.md](docs/trilha-a.md).
 6. **Redução de warnings do lint** e verificação automatizada de acessibilidade.
 
 ## Uso de IA
