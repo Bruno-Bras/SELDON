@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.SeldonFleet" parent="android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/seldon_void</item>
+        <item name="android:colorAccent">@color/seldon_healthy</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:fontFamily">@font/barlow_regular</item>
+    </style>
+</resources>
