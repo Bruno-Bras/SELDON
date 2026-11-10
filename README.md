@@ -34,7 +34,7 @@ No arquivo oficial de 30 dispositivos, o resultado é **16 OK, 8 ATENÇÃO,
 ## Requisitos
 
 - Android Studio com suporte ao Android Gradle Plugin do projeto, ou terminal com o Gradle Wrapper.
-- JDK 17 ou superior para iniciar o Gradle. O Wrapper usa Gradle 8.13; o daemon está configurado para JetBrains JDK 21 e pode ser provisionado pelo Foojay na primeira sincronização.
+- JDK 17 ou superior para iniciar o Gradle. O Wrapper usa Gradle 8.13 e solicita JDK 21 para o daemon; se ele não estiver instalado, o Gradle pode provisioná-lo pelo Foojay na primeira sincronização.
 - Android SDK Platform 35 e Android SDK Platform-Tools. O app aceita aparelhos e emuladores com Android 8.0 (API 26) ou superior.
 - Internet durante a primeira sincronização para baixar Gradle, JDK e dependências. Depois de instalado, o app lê os dados localmente e não precisa de rede.
 
