@@ -33,29 +33,47 @@ No arquivo oficial de 30 dispositivos, o resultado é **16 OK, 8 ATENÇÃO,
 
 ## Requisitos
 
-- JDK 17.
-- Android SDK com `compileSdk 35`.
-- Android Studio ou Gradle Wrapper.
+- Android Studio com suporte ao Android Gradle Plugin do projeto, ou terminal com o Gradle Wrapper.
+- JDK 17 ou superior para iniciar o Gradle. O Wrapper usa Gradle 8.13; o daemon está configurado para JetBrains JDK 21 e pode ser provisionado pelo Foojay na primeira sincronização.
+- Android SDK Platform 35 e Android SDK Platform-Tools. O app aceita aparelhos e emuladores com Android 8.0 (API 26) ou superior.
+- Internet durante a primeira sincronização para baixar Gradle, JDK e dependências. Depois de instalado, o app lê os dados localmente e não precisa de rede.
+
+As fontes Java/Kotlin são compiladas para o alvo 17; isso é independente da JVM 21 usada pelo daemon do Gradle.
 
 ## Como executar
 
-No Windows:
+### Pelo Android Studio
+
+1. Abra no Android Studio a pasta raiz do repositório, onde está `settings.gradle.kts`.
+2. Aguarde a sincronização do Gradle. Se solicitado, instale o Android SDK Platform 35 pelo SDK Manager.
+3. Inicie um emulador com API 26 ou superior, ou conecte um aparelho com depuração USB habilitada.
+4. Selecione a configuração `app` e o dispositivo desejado e pressione **Run**.
+
+### Pelo terminal no Linux ou macOS
+
+Use `bash ./gradlew`, pois o script `gradlew` deste checkout não tem a permissão de execução configurada:
+
+```bash
+bash ./gradlew :app:assembleDebug
+
+# Para instalar em um emulador ou aparelho conectado
+adb devices
+bash ./gradlew :app:installDebug
+adb shell am start -n com.seldon.fleet/.MainActivity
+```
+
+### Pelo terminal no Windows (PowerShell)
 
 ```powershell
 .\gradlew.bat :app:assembleDebug
-.\gradlew.bat :app:testDebugUnitTest
-.\gradlew.bat :app:lintDebug
-```
 
-O APK de debug é gerado em
-`app/build/outputs/apk/debug/app-debug.apk`.
-
-Para instalar em um emulador ou aparelho conectado:
-
-```powershell
-adb install -r app\build\outputs\apk\debug\app-debug.apk
+# Para instalar em um emulador ou aparelho conectado
+adb devices
+.\gradlew.bat :app:installDebug
 adb shell am start -n com.seldon.fleet/.MainActivity
 ```
+
+O APK de debug é gerado em `app/build/outputs/apk/debug/app-debug.apk`. A compilação com `assembleDebug` não exige dispositivo; `installDebug` exige um emulador ou aparelho conectado.
 
 ## Arquitetura
 
@@ -98,7 +116,15 @@ A regra de dependência é respeitada:
 A suíte roda na JVM, sem emulador:
 
 ```bash
-./gradlew :app:testDebugUnitTest
+bash ./gradlew :app:testDebugUnitTest
+bash ./gradlew :app:lintDebug
+```
+
+No Windows (PowerShell):
+
+```powershell
+.\gradlew.bat :app:testDebugUnitTest
+.\gradlew.bat :app:lintDebug
 ```
 
 Cobertura principal:
@@ -127,6 +153,12 @@ falsos positivos e 1 falso negativo, sem nenhum caso em que fosse claramente
 melhor.
 
 Para reproduzir apenas a comparação:
+
+```bash
+bash ./gradlew :app:testDebugUnitTest --tests "com.seldon.fleet.domain.comparison.*"
+```
+
+No Windows (PowerShell):
 
 ```powershell
 .\gradlew.bat :app:testDebugUnitTest --tests "com.seldon.fleet.domain.comparison.*"

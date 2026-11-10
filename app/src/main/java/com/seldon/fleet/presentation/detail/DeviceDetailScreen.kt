@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -23,8 +22,6 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,6 +46,7 @@ import com.seldon.fleet.presentation.common.formatUtcDate
 import com.seldon.fleet.presentation.common.formatUtcTime
 import com.seldon.fleet.presentation.components.ConsoleBackground
 import com.seldon.fleet.presentation.components.ConsolePanel
+import com.seldon.fleet.presentation.components.ConsoleSnackbarHost
 import com.seldon.fleet.presentation.components.DetailSkeleton
 import com.seldon.fleet.presentation.components.DeviceIdentityHeader
 import com.seldon.fleet.presentation.components.FavoriteButton
@@ -116,21 +114,10 @@ fun DeviceDetailScreen(
                 }
             }
 
-            SnackbarHost(
+            ConsoleSnackbarHost(
                 hostState = snackbarHostState,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(16.dp),
-            ) { data ->
-                Snackbar(
-                    snackbarData = data,
-                    shape = RoundedCornerShape(10.dp),
-                    containerColor = SeldonColors.PanelRaised,
-                    contentColor = SeldonColors.TextPrimary,
-                    actionColor = SeldonColors.Healthy,
-                    dismissActionContentColor = SeldonColors.TextMuted,
-                )
-            }
+                modifier = Modifier.align(Alignment.BottomCenter),
+            )
         }
     }
 }
